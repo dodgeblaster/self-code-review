@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="shortcut icon" href="#">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+
+  
+</style>
+<body>
+  <div class="wrapper">
+  <div id="list"></div>
+  </div>
+
+  <script type="module">
+    import './codediff/index.js'
+
+    const d = document.getElementById('diff-container')
+
+
+  
+
+async function main() {
+        const response = await fetch('/api/commit', {
+            method: 'POST',
+            body: JSON.stringify({ path: 'HOME' }),
+        });
+
+        const data = await response.json()
+        const diffData = JSON.parse(data.body).diff
+        const results = JSON.parse(data.body).result
+
+        const xx  = JSON.parse(results)
+     
+
+        diffData.diff.forEach((d, i) => {
+          const el = document.createElement('diff-view')
+          document.getElementById('list').appendChild(el)
+  
+          el.show(d.path, d.original, d.updated)
+
+          const aiResponse = xx.diff[i]
+
+         
+
+            const ell = document.createElement('pre')
+            ell.style = 'text-wrap: wrap;'
+            ell.innerHTML = `<code>${aiResponse.updated}</code>`
+            document.getElementById('list').appendChild(ell)
+          
+            if (aiResponse.comments) {
+            aiResponse.comments.forEach(c => {
+              const div = document.createElement('div')
+              div.classList.add('conversation-me')
+             
+              div.innerHTML = typeof c === 'string' ? c : JSON.stringify(c, null, 2)
+              document.getElementById('list').appendChild(div)
+            })
+
+          } 
+
+
+        })
+
+        if (xx.comments) {
+            xx.comments.forEach(c => {
+              const div = document.createElement('div')
+              div.classList.add('conversation-me')
+             
+              div.innerHTML = typeof c === 'string' ? c : JSON.stringify(c, null, 2)
+              document.getElementById('list').appendChild(div)
+            })
+
+          } 
+
+
+     
+    }
+
+    main()
+
+// d.show(data.diff[1].original, data.diff[1].updated)
+  </script>
+</body>
+</html>
